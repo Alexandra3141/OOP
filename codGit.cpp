@@ -3,7 +3,13 @@
 #include<fstream>
 using namespace std;
 
-class Produs {
+class TVA {
+public:
+	~TVA() = default;
+	virtual float getTVA() = 0;
+};
+
+class Produs{
 	char* denumire;
 	int cantitate;
 	float pret;
@@ -153,7 +159,7 @@ ifstream& operator>>(ifstream& f, Produs& p) {
 	return f;
 }
 
-class Magazin {
+class Magazin{
 	string nume;
 	char* patron;
 	int nrProduse;
@@ -250,6 +256,10 @@ public:
 		return total;
 	}
 
+	string getNume() {
+		return nume;
+	}
+
 	void serializare() {
 		ofstream f("magazin.bin", ios::binary | ios::out);
 		int lungime = 0;
@@ -307,6 +317,10 @@ public:
 			produse = nullptr;
 		}
 		f.close();
+	}
+
+	virtual void getAfisareNume() {
+		cout << nume << endl;
 	}
 
 	friend ostream& operator<<(ostream& out, Magazin m);
@@ -402,6 +416,30 @@ ifstream& operator>>(ifstream& f, Magazin& m) {
 	return f;
 }
 
+class MagazinMic : public Magazin, public TVA {
+	int capacitate;
+public:
+	MagazinMic() : Magazin() {
+		capacitate = 0;
+	}
+
+	MagazinMic(string nume, const char* patron, int nrProduse, Produs* produse, int suprafata, int capacitate) : Magazin(nume, patron, nrProduse, produse, suprafata) {
+		this->capacitate = capacitate;
+	}
+
+	float getTVA() override {
+		return getValoareTotala() * 0.21;
+	}
+
+	void getAfisareNume() override {
+		cout << "magazin mic" << Magazin::getNume() << endl;
+	}
+
+	~MagazinMic() {
+
+	}
+};
+
 int main() {
 	Produs b("branza", 12, 2.5);
 	cout << b << endl;
@@ -414,10 +452,10 @@ int main() {
 	cout << b2 << endl;
 	Produs b3;
 	cout << "testam serializarea" << endl;
-	ofstream l("produs.bin", ios::binary| ios::out);
+	ofstream l("produs.bin", ios::binary | ios::out);
 	b2.serializare(l);
 	l.close();
-	ifstream t("produs.bin", ios::binary| ios::in);
+	ifstream t("produs.bin", ios::binary | ios::in);
 	b3.deserializare(t);
 	t.close();
 	cout << b3 << endl;
