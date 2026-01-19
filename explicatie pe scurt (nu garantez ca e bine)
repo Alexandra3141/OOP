@@ -1,0 +1,22 @@
+exemplifica conceptul de virtualizare / late binding vs early binding:
+in clasa respectiva trebuie adaugata o functie virtuala care va fi "override" in clasele derivate din functia respectiva si de ce facem asta? Acest lucru îi spune compilatorului: "Nu decide acum care metodă se apelează, așteaptă până la execuție să vezi ce fel de obiect este de fapt".
+cica late binding e mai rapid ca early binding
+si early binding e atunci cand se decide la compilare si cel mai bun exemplu e cand incarci un operator intr-o clasa si il rescri si pentru clasa derivata
+late->in executie
+early->la compilare
+
+functie vuirtuala pura: o functie care pointeaza la 0 in clasa de baza si trebuie neaparat rescrisa in clasele derivate din ea, daca o clasa are o functie d-asta, atunci ea devine abstracta
+si apar probleme cu ea, nu ,mai poti sa supraincarci operatori in ea, trebuie sa o apelezi cu pointeri, e mai complicat aici spre exemplu daca am clasa abstracta casa
+casa c->eroare
+casa *c->merge
+de ce sa faci asta?
+pentru ca te obliga ca toate clasele derivate sa faca ceva cu ea spre exemplu daca ai clasa impozite abstracta si derivezi masina si casa din ea, cele 2 trebuie sa adopte un impozit ca altfel si ele devin abstracte
+spre exemplu
+impozit{virtual void impozit()=0}
+masina{void impozit override{cout<<"impozit masina";}
+casa{void impozit override{cout<<"impozit casa";}
+
+is a este derivarea spre exemplu din clasa persoana deriv clasa elev ca un elev e o persoana (one student is a person); aici trebuie sa preiei toti constructorii si eventual si operatorii care au relevanta pt noua
+clasa (=, ==, <<, >>) si functiile virtuale daca ai (doamne ajuta sa nu) 
+has a este compunerea, aia cu vector de ceva, spre exemplu clasa magazin are mai multe obiecte din clasa produse, sau doar unul (tha market has a product/more products)
+si aici vom avea declarare in clasa de baza Produs* produse
