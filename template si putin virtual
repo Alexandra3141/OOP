@@ -1,0 +1,183 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+template <typename T>
+T casaCuCeleMaiMulteCamere(T a, T b) {
+	if (a > b)
+		return a;
+	return b;
+}
+
+template<typename S>
+S casaegala(S a, S b) {
+	if (S a == S b)
+		return 1;
+	return 0;
+}
+
+enum tipCamera {
+	dormitor = 1,
+	bucatarie = 2,
+	baie = 3
+};
+
+class Locuinta {
+private:
+	string denumire;
+	int nrCamere;
+	tipCamera* camere;
+	const int suprafata;
+
+public:
+	Locuinta() :suprafata(0){
+		denumire = "N/A";
+		nrCamere = 0;
+		camere = nullptr;
+	}
+
+	Locuinta(string denumire, int nrCamere, tipCamera* camere, int suprafata) : suprafata(suprafata) {
+		this->denumire = denumire;
+		if (nrCamere > 0 && camere != nullptr) {
+			this->nrCamere = nrCamere;
+			this->camere = new tipCamera[nrCamere];
+			for (int i = 0; i < nrCamere; i++)
+				this->camere[i] = camere[i];
+		}
+		else {
+			this->nrCamere = 0;
+			this->camere = nullptr;
+		}
+	}
+
+	Locuinta(const Locuinta& l) : suprafata(l.suprafata) {
+		this->denumire = l.denumire;
+		if (l.nrCamere > 0 && l.camere != nullptr) {
+			this->nrCamere = l.nrCamere;
+			this->camere = new tipCamera[l.nrCamere];
+			for (int i = 0; i < l.nrCamere; i++)
+				this->camere[i] = l.camere[i];
+		}
+		else {
+			this->nrCamere = 0;
+			this->camere = nullptr;
+		}
+	}
+
+	Locuinta& operator=(const Locuinta& l) {
+		if (this != &l) {
+			this->denumire = l.denumire;
+			if (this->camere != nullptr)
+				delete[] camere;
+			if (l.nrCamere > 0 && l.camere != nullptr) {
+				this->nrCamere = l.nrCamere;
+				this->camere = new tipCamera[l.nrCamere];
+				for (int i = 0; i < l.nrCamere; i++)
+					this->camere[i] = l.camere[i];
+			}
+			else {
+				this->nrCamere = 0;
+				this->camere = nullptr;
+			}
+		}
+		return *this;
+	}
+
+	~Locuinta() {
+		if (this->camere != nullptr)
+			delete[] camere;
+	}
+
+	virtual void afisare() {
+		cout << "locuinta";
+	}
+
+	int getNumarCamere() {
+		return nrCamere;
+	}
+
+	//getteri si setteri
+
+	bool operator()(int nrLocatari) {
+		int dormitor = 0;
+		for (int i = 0; i < nrCamere; i++)
+			if (camere[i] == 1)
+				dormitor++;
+		return dormitor <= nrLocatari;
+	}
+
+	bool operator==(const Locuinta& l) {
+		if (this->denumire != l.denumire)
+			return false;
+		if (this->nrCamere != l.nrCamere)
+			return false;
+		if (this->camere != nullptr && l.camere != nullptr) {
+			for (int i = 0; i < this->nrCamere; i++)
+				if (this->camere[i] != l.camere[i])
+					return false;
+		}
+		else if (this->camere != l.camere)
+			return false;
+		if (this->suprafata != l.suprafata)
+			return false;
+		return true;
+	}
+
+	friend ostream& operator<<(ostream& out, Locuinta l);
+};
+
+ostream& operator<<(ostream& out, Locuinta l) {
+	out << l.denumire << endl;
+	if (l.nrCamere > 0 && l.camere != nullptr) {
+		out << l.nrCamere << endl;
+		for (int i = 0; i < l.nrCamere; i++)
+			out << l.camere[i] << endl;
+	}
+	else {
+		out << 0 << endl;
+		out << "N/A" << endl;
+	}
+	out << l.suprafata << endl;
+	return out;
+}
+
+class Casa : public Locuinta {
+	int suprafataCurte;
+
+public:
+	Casa() :Locuinta() {
+		suprafataCurte = 0;
+	}
+	//se adauga si ceilalti constructori
+
+	bool operator==(const Casa& c) {
+		if (!Locuinta::operator==(c))
+			return false;
+		if (this->suprafataCurte != c.suprafataCurte)
+			return false;
+		return true;
+	}
+
+	void afisare() override {
+		cout << "casa";
+	}
+};
+
+int main() {
+	tipCamera ca[] = { dormitor, baie, baie, dormitor, dormitor, bucatarie };
+	Locuinta l("bloc", 6, ca, 100);
+	Locuinta l2;
+	if (l(4)) cout << "da";
+	else cout << "nu";
+	cout << endl;
+	Casa c1, c2;
+	if (c1 == c2)
+		cout << "aici am early binding" << endl;
+	cout << "aici am late binding: ";
+	Locuinta* loc;
+	loc = new Casa();
+	loc->afisare();
+	cout << endl;
+	int maxCamere = casaCuCeleMaiMulteCamere<int>(l.getNumarCamere(), l2.getNumarCamere());
+	cout << maxCamere << endl;
+}
